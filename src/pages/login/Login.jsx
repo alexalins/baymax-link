@@ -45,6 +45,10 @@ const Login = () => {
     }
   };
 
+  const handleNavigateToRegister = () => {
+    navigate('/register');
+  };
+
   useEffect(() => {
     if (authError) {
       setError(authError);
@@ -55,10 +59,8 @@ const Login = () => {
     <div
       className={`${styles.login} d-flex justify-content-center align-items-center`}
     >
-      <Card style={{ width: "25rem" }}>
-        <Card.Body>
-          <Card.Title className="text-center">Login</Card.Title>
-        </Card.Body>
+      <Card className={styles.card}>
+        <h3 className="text-center">Login</h3>
         <Form>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <FloatingLabel controlId="floatingEmail" label="E-mail">
@@ -97,7 +99,7 @@ const Login = () => {
             >
               Entrar com Google
             </Button>
-            <Button variant="link" className="btn w-100">
+            <Button variant="link" className="btn w-100" onClick={handleNavigateToRegister}>
               Cadastrar
             </Button>
           </div>
