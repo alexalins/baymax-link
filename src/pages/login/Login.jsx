@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import styles from "./Login.module.css";
 import useAuthentication from "../../hooks/useAuthentication";
 import { Card, Button, Form, FloatingLabel } from "react-bootstrap";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const {
     loginWithEmailAndPassword,
@@ -26,7 +28,10 @@ const Login = () => {
       password,
     };
     await loginWithEmailAndPassword(userLogin);
-    console.log(user);
+    if(user) {
+      console.log(user);
+      navigate('/home');
+    }
   };
 
   const handleLoginWithGoogle = async (e) => {
@@ -34,7 +39,10 @@ const Login = () => {
 
     setError("");
     await loginWithGoogle(user);
-    console.log(user);
+    if(user) {
+      console.log(user);
+      navigate('/home');
+    }
   };
 
   useEffect(() => {

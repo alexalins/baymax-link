@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 //hooks
 import useAuthentication from "./hooks/useAuthentication";
+import Home from './pages/home/Home';
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -33,6 +34,7 @@ function App() {
           <div className="container">
             <Routes>
               <Route path="/" element={<Login />}></Route>
+              <Route path="/home" element={<Home />}></Route>
             </Routes>
           </div>
         </BrowserRouter>
