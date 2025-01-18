@@ -8,7 +8,7 @@ import {
   GoogleAuthProvider
 } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { db } from "../../firebase/config";
+import { db } from "../../../firebase/config";
 
 const useAuthentication = () => {
   const [error, setError] = useState(null);

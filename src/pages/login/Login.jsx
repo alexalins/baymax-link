@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import styles from "./Login.module.css";
-import useAuthentication from "../../hooks/useAuthentication";
+import useAuthentication from "../../shared/hooks/useAuthentication";
 import { Card, Button, Form, FloatingLabel } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
+import ToastNotification from "../../shared/components/ToastNotification";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastType, setToastType] = useState("");
   const navigate = useNavigate();
 
   const {
@@ -28,9 +32,15 @@ const Login = () => {
       password,
     };
     await loginWithEmailAndPassword(userLogin);
-    if(user) {
-      console.log(user);
+    if (user) {
+      setToastMessage("Login realizado com sucesso!");
+      setShowToast(true);
+      setToastType("success");
       navigate('/home');
+    } else {
+      setToastMessage("Erro ao realizar o login.");
+      setShowToast(true);
+      setToastType("error");
     }
   };
 
@@ -39,9 +49,15 @@ const Login = () => {
 
     setError("");
     await loginWithGoogle(user);
-    if(user) {
-      console.log(user);
+    if (user) {
+      setToastMessage("Login realizado com sucesso!");
+      setShowToast(true);
+      setToastType("success");
       navigate('/home');
+    } else {
+      setToastMessage("Erro ao realizar o login.");
+      setShowToast(true);
+      setToastType("error");
     }
   };
 
@@ -107,6 +123,13 @@ const Login = () => {
           {error && <p className="error">{error}</p>}
         </Form>
       </Card>
+      {showToast && (
+        <ToastNotification
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };

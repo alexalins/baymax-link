@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import useAuthentication from "../../hooks/useAuthentication";
-import { Card, Button, Form, FloatingLabel } from 'react-bootstrap';
+import useAuthentication from "../../shared/hooks/useAuthentication";
+import { Card, Button, Form, FloatingLabel } from "react-bootstrap";
 import styles from "./Register.module.css";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import { db } from "../../../firebase/config";
+import ToastNotification from "../../shared/components/ToastNotification";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -12,9 +13,13 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastType, setToastType] = useState("");
+
+  //
   const { createUser, error: authError, loading } = useAuthentication();
   const navigate = useNavigate();
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,9 +38,15 @@ const Register = () => {
     };
 
     const res = await createUser(user);
-    if(res) {
-      console.log(res);
-      navigate('/');
+    if (res) {
+      navigate("/");
+      setToastMessage("Cadastro realizado com sucesso!");
+      setShowToast(true);
+      setToastType("success");
+    } else {
+      setToastMessage("Erro ao realizar o cadastro.");
+      setShowToast(true);
+      setToastType("error");
     }
   };
 
@@ -46,7 +57,9 @@ const Register = () => {
   }, [authError]);
 
   return (
-    <div className={`${styles.register} d-flex justify-content-center align-items-center`}>
+    <div
+      className={`${styles.register} d-flex justify-content-center align-items-center`}
+    >
       <Card className={styles.card}>
         <Card.Body>
           <h3 className="text-center">Cadastre-se</h3>
@@ -84,7 +97,11 @@ const Register = () => {
               />
             </FloatingLabel>
 
-            <FloatingLabel controlId="confirmPassword" label="Confirmação de senha" className="mb-3">
+            <FloatingLabel
+              controlId="confirmPassword"
+              label="Confirmação de senha"
+              className="mb-3"
+            >
               <Form.Control
                 type="password"
                 name="confirmPassword"
@@ -96,15 +113,27 @@ const Register = () => {
             </FloatingLabel>
 
             {loading ? (
-              <Button className="btn btn-danger w-100" disabled> Aguardando... </Button>
+              <Button className="btn btn-danger w-100" disabled>
+                {" "}
+                Aguardando...{" "}
+              </Button>
             ) : (
-              <Button className="btn btn-danger w-100" type="submit">Salvar</Button>
+              <Button className="btn btn-danger w-100" type="submit">
+                Salvar
+              </Button>
             )}
 
             {error && <p className="text-danger mt-3">{error}</p>}
           </Form>
         </Card.Body>
       </Card>
+      {showToast && (
+        <ToastNotification
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };
