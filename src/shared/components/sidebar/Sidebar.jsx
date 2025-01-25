@@ -1,24 +1,29 @@
 import React, { useState } from "react";
 import { Offcanvas, Button, Nav } from "react-bootstrap";
+import styles from "./Sidebar.module.css";
+import { useAuthValue } from "../../context/AuthContext";
+
 
 const Sidebar = ({ children }) => {
   const [show, setShow] = useState(false);
+  const { user } = useAuthValue();  
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  console.log(user)
 
   return (
     <div className="d-flex">
       <div
-        className="d-none d-lg-block bg-light vh-100 p-3"
-        style={{ width: "250px" }}
+        className={`${styles.container} d-none d-lg-block bg-dark vh-100 text-white `}
       >
-        <h5 className="text-primary">Menu Lateral</h5>
-        <Nav className="flex-column">
-          <Nav.Link href="#home">Home</Nav.Link>
-          <Nav.Link to="/">Sair</Nav.Link>
-          <Nav.Link href="#services">Serviços</Nav.Link>
-          <Nav.Link href="#contact">Contato</Nav.Link>
+        <h5 className={`${styles.nome} flex-column p-3`}>{user.displayName ? user.displayName : 'Usuário logado'}</h5>
+        <Nav className={`flex-column`}>
+          <div className={styles.menu}>
+            <Nav.Link href="#home" className={styles.menuItem}>Gerar Código</Nav.Link>
+            <Nav.Link href="#home" className={styles.menuItem}>Desconectar Par</Nav.Link>
+          </div>
+          <Nav.Link href="/" className={styles.menuBottom}>Sair</Nav.Link>
         </Nav>
       </div>
 

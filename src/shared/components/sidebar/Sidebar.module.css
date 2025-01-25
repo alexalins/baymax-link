@@ -1,0 +1,27 @@
+.container {
+  height: 100vh;
+  width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nome {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.menu {
+  position: absolute;
+  top: 100px;
+}
+
+.menuBottom {
+  position: absolute;
+  bottom: 0;
+}
+
+.menuItem {
+  padding-top: 20px;
+}
