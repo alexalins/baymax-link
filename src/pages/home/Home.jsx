@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import ToastNotification from "../../shared/components/ToastNotification/ToastNotification";
+import ToastNotification from "../../shared/components/toastNotification/ToastNotification";
+import Sidebar from "../../shared/components/sidebar/Sidebar";
 
 const Home = () => {
   const [toastMessage, setToastMessage] = useState("");
@@ -14,14 +15,17 @@ const Home = () => {
 
   return (
     <div>
-      <h1>Home</h1>
-      {showToast && (
-        <ToastNotification
-          message={toastMessage}
-          type={toastType}
-          onClose={() => setShowToast(false)}
-        />
-      )}
+      <Sidebar>
+        <h1>Home</h1>
+
+        {showToast && (
+          <ToastNotification
+            message={toastMessage}
+            type={toastType}
+            onClose={() => setShowToast(false)}
+          />
+        )}
+      </Sidebar>
     </div>
   );
 };
