@@ -122,10 +122,34 @@ const Sidebar = ({ children }) => {
           </Offcanvas.Header>
           <Offcanvas.Body>
             <Nav className="flex-column">
-              <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link to="/">Sair</Nav.Link>
-              <Nav.Link href="#services">Serviços</Nav.Link>
-              <Nav.Link href="#contact">Contato</Nav.Link>
+              <div className={styles.menu}>
+                {isPair ? (
+                  <Nav.Link
+                    onClick={handleDeletePair}
+                    className={styles.menuItem}
+                  >
+                    Desconectar Par
+                  </Nav.Link>
+                ) : (
+                  <>
+                    <Nav.Link
+                      onClick={handleGeneratePairCode}
+                      className={styles.menuItem}
+                    >
+                      Gerar Código
+                    </Nav.Link>
+                    <Nav.Link
+                      className={styles.menuItem}
+                      onClick={handleCodeModalOpen}
+                    >
+                      Conectar Par
+                    </Nav.Link>
+                  </>
+                )}
+              </div>
+              <Nav.Link href="/" className={styles.menuBottom}>
+                Sair
+              </Nav.Link>
             </Nav>
           </Offcanvas.Body>
         </Offcanvas>
