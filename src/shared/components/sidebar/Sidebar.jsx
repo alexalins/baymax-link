@@ -1,29 +1,85 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Offcanvas, Button, Nav } from "react-bootstrap";
 import styles from "./Sidebar.module.css";
 import { useAuthValue } from "../../context/AuthContext";
-
+import usePairing from "../../hooks/usePairing";
+import ToastNotification from "../toastNotification/ToastNotification";
+import CodeDisplay from "../codeDisplay/CodeDisplay";
 
 const Sidebar = ({ children }) => {
   const [show, setShow] = useState(false);
-  const { user } = useAuthValue();  
+  const [isPair, setIsPair] = useState(false);
+  const [code, setCode] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastType, setToastType] = useState("");
+  const [error, setError] = useState("");
+  const { user } = useAuthValue();
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  console.log(user)
+
+  const { checkIfUserHasPair, generatePairCode } = usePairing();
+
+  useEffect(() => {
+    const result = checkIfUserHasPair(user?.uid);
+    result.then((res) => {
+      setIsPair(res);
+    });
+  }, []);
+
+  const handleGeneratePairCode = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    const code = await generatePairCode(user?.uid, user?.email);
+    if (code) {
+      setCode(code);
+      setToastMessage("Código gerado com sucesso!");
+      setShowToast(true);
+      setToastType("success");
+    } else {
+      setCode("");
+      setToastMessage("Erro ao gerar o código.");
+      setShowToast(true);
+      setToastType("error");
+    }
+  };
 
   return (
     <div className="d-flex">
       <div
         className={`${styles.container} d-none d-lg-block bg-dark vh-100 text-white `}
       >
-        <h5 className={`${styles.nome} flex-column p-3`}>{user.displayName ? user.displayName : 'Usuário logado'}</h5>
+        <h5 className={`${styles.nome} flex-column p-3`}>
+          {user?.displayName ? user.displayName : "Usuário logado"}
+        </h5>
+        {code && <CodeDisplay code={code} /> }
+        
         <Nav className={`flex-column`}>
           <div className={styles.menu}>
-            <Nav.Link href="#home" className={styles.menuItem}>Gerar Código</Nav.Link>
-            <Nav.Link href="#home" className={styles.menuItem}>Desconectar Par</Nav.Link>
+            <Nav.Link
+              onClick={handleGeneratePairCode}
+              className={styles.menuItem}
+            >
+              Gerar Código
+            </Nav.Link>
+            {isPair ? (
+              () => (
+                <Nav.Link href="#home" className={styles.menuItem}>
+                  {" "}
+                  Desconectar Par
+                </Nav.Link>
+              )
+            ) : (
+              <Nav.Link href="#home" className={styles.menuItem}>
+                Conectar Par
+              </Nav.Link>
+            )}
           </div>
-          <Nav.Link href="/" className={styles.menuBottom}>Sair</Nav.Link>
+          <Nav.Link href="/" className={styles.menuBottom}>
+            Sair
+          </Nav.Link>
         </Nav>
       </div>
 
@@ -45,8 +101,14 @@ const Sidebar = ({ children }) => {
           </Offcanvas.Body>
         </Offcanvas>
       </div>
-
       <div className="flex-grow-1 p-4">{children}</div>
+      {showToast && (
+        <ToastNotification
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };
