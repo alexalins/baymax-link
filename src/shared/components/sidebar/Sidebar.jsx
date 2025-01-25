@@ -5,6 +5,9 @@ import { useAuthValue } from "../../context/AuthContext";
 import usePairing from "../../hooks/usePairing";
 import ToastNotification from "../toastNotification/ToastNotification";
 import CodeDisplay from "../codeDisplay/CodeDisplay";
+import CodeConnectionModal from "../codeConnectionModal/CodeConnectionModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = ({ children }) => {
   const [show, setShow] = useState(false);
@@ -15,17 +18,22 @@ const Sidebar = ({ children }) => {
   const [toastType, setToastType] = useState("");
   const [error, setError] = useState("");
   const { user } = useAuthValue();
+  const [showModal, setShowModal] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const handleCodeModalOpen = () => setShowModal(true);
+  const handleCodeModalClose = () => setShowModal(false);
 
   const { checkIfUserHasPair, generatePairCode } = usePairing();
 
   useEffect(() => {
     const result = checkIfUserHasPair(user?.uid);
-    result.then((res) => {
-      setIsPair(res);
-    });
+    if (result) {
+      setIsPair(result);
+    } else {
+      setIsPair(false);
+    }
   }, []);
 
   const handleGeneratePairCode = async (e) => {
@@ -38,6 +46,7 @@ const Sidebar = ({ children }) => {
       setToastMessage("Código gerado com sucesso!");
       setShowToast(true);
       setToastType("success");
+      setIsPair(true);
     } else {
       setCode("");
       setToastMessage("Erro ao gerar o código.");
@@ -54,27 +63,30 @@ const Sidebar = ({ children }) => {
         <h5 className={`${styles.nome} flex-column p-3`}>
           {user?.displayName ? user.displayName : "Usuário logado"}
         </h5>
-        {code && <CodeDisplay code={code} /> }
-        
+        {code && <CodeDisplay code={code} />}
+
         <Nav className={`flex-column`}>
           <div className={styles.menu}>
-            <Nav.Link
-              onClick={handleGeneratePairCode}
-              className={styles.menuItem}
-            >
-              Gerar Código
-            </Nav.Link>
             {isPair ? (
-              () => (
-                <Nav.Link href="#home" className={styles.menuItem}>
-                  {" "}
-                  Desconectar Par
-                </Nav.Link>
-              )
-            ) : (
               <Nav.Link href="#home" className={styles.menuItem}>
-                Conectar Par
+                Desconectar Par
               </Nav.Link>
+            ) : (
+              <>
+                <Nav.Link
+                  onClick={handleGeneratePairCode}
+                  className={styles.menuItem}
+                >
+                  Gerar Código
+                </Nav.Link>
+                <Nav.Link
+                  href="#home"
+                  className={styles.menuItem}
+                  onClick={handleCodeModalOpen}
+                >
+                  Conectar Par
+                </Nav.Link>
+              </>
             )}
           </div>
           <Nav.Link href="/" className={styles.menuBottom}>
@@ -85,7 +97,7 @@ const Sidebar = ({ children }) => {
 
       <div className="d-lg-none">
         <Button variant="primary" onClick={handleShow} className="m-2">
-          ☰
+          <FontAwesomeIcon icon={faBars} />
         </Button>
         <Offcanvas show={show} onHide={handleClose}>
           <Offcanvas.Header closeButton>
@@ -109,6 +121,10 @@ const Sidebar = ({ children }) => {
           onClose={() => setShowToast(false)}
         />
       )}
+      <CodeConnectionModal
+        showModal={showModal}
+        handleClose={handleCodeModalClose}
+      />
     </div>
   );
 };
