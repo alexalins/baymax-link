@@ -69,10 +69,10 @@ const Login = () => {
 
   return (
     <div
-      className={`${styles.login} d-flex justify-content-center align-items-center`}
+      className={`${styles.container} d-flex justify-content-center align-items-center`}
     >
       <Card className={styles.card}>
-        <h3 className="text-center">Login</h3>
+        <h3 className={`${styles.titulo} text-center`}>Login</h3> 
         <Form>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <FloatingLabel controlId="floatingEmail" label="E-mail">
@@ -115,8 +115,8 @@ const Login = () => {
               Cadastrar
             </Button>
           </div>
-          {loading && <p className="error">Aguarde...</p>}
-          {error && <p className="error">{error}</p>}
+          {loading && <p className="error text-center">Aguarde...</p>}
+          {error && <p className="error text-center">{error}</p>}
         </Form>
       </Card>
       {showToast && (

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useAuthentication from "../../shared/hooks/useAuthentication";
 import { Card, Button, Form, FloatingLabel } from "react-bootstrap";
 import styles from "./Register.module.css";
-import ToastNotification from "../../shared/components/ToastNotification/ToastNotification";
+import ToastNotification from "../../shared/components/toastNotification/ToastNotification";
 import { db } from "../../../firebase/config";
 
 const Register = () => {
@@ -60,11 +60,11 @@ const Register = () => {
 
   return (
     <div
-      className={`${styles.register} d-flex justify-content-center align-items-center`}
+      className={`${styles.container} d-flex justify-content-center align-items-center`}
     >
       <Card className={styles.card}>
         <Card.Body>
-          <h3 className="text-center">Cadastre-se</h3>
+          <h3 className={`${styles.titulo} text-center`}>Cadastre-se</h3>
           <Form onSubmit={handleSubmit}>
             <FloatingLabel controlId="name" label="Nome" className="mb-3">
               <Form.Control
@@ -115,7 +115,7 @@ const Register = () => {
             </FloatingLabel>
 
             {loading ? (
-              <Button className="btn btn-danger w-100" disabled>
+              <Button className="btn btn-danger w-100 text-center" disabled>
                 {" "}
                 Aguardando...{" "}
               </Button>
