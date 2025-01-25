@@ -45,12 +45,14 @@ const usePairing = () => {
       const pairDoc = await getDoc(pairRef);
 
       if (!pairDoc.exists()) {
-        throw new Error("Código inválido.");
+        setError("Código inválido.");
+        return false;
       }
 
       const data = pairDoc.data();
       if (data.user2) {
-        throw new Error("O código já foi usado.");
+        setError("O código já foi usado.");
+        return false;
       }
 
       await updateDoc(pairRef, {
@@ -70,28 +72,23 @@ const usePairing = () => {
   const checkIfUserHasPair = async (userId) => {
     try {
       setLoading(true);
+
       const pairsRef = collection(db, "pairs");
-
-      const q1 = query(pairsRef, where("user1.userId", "==", userId), where("user2", "!=", null));
+      const q1 = query(pairsRef, where("user1.userId", "==", userId));
+      const result1 = await getDocs(q1);
+      const hasPair1 = result1.docs.some((doc) => doc.data().user2 !== null);
       const q2 = query(pairsRef, where("user2.userId", "==", userId));
-
-      const [result1, result2] = await Promise.all([getDocs(q1), getDocs(q2)]);
-
-      const hasPair = !result1.empty || !result2.empty;
-      const pairData = hasPair
-        ? !result1.empty
-          ? result1.docs[0].data()
-          : result2.docs[0].data()
-        : null;
-
+      const result2 = await getDocs(q2);
+      const hasPair = hasPair1 || !result2.empty;
+  
       setLoading(false);
-      return { hasPair, pairData };
+      return hasPair;
     } catch (err) {
       setError(err.message);
       setLoading(false);
       throw err;
     }
-  };
+  };  
 
   const deletePair = async (code) => {
     try {
