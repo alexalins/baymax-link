@@ -86,21 +86,33 @@ const usePairing = () => {
     } catch (err) {
       setError(err.message);
       setLoading(false);
-      throw err;
+      return false;
     }
   };  
 
-  const deletePair = async (code) => {
+  const deletePair = async (userId) => {
     try {
       setLoading(true);
-      const pairRef = doc(db, "pairs", code);
-      await deleteDoc(pairRef);
-      setLoading(false);
-      return true;
+      const pairsRef = collection(db, "pairs");
+      const q1 = query(pairsRef, where("user1.userId", "==", userId));
+      const q2 = query(pairsRef, where("user2.userId", "==", userId));
+
+      const querySnapshot1 = await getDocs(q1);
+      const querySnapshot2 = await getDocs(q2);
+
+      const combinedDocs = [...querySnapshot1.docs, ...querySnapshot2.docs];
+
+      if (combinedDocs.length > 0) {
+        const pairDoc = combinedDocs[0];
+        await deleteDoc(doc(db, "pairs", pairDoc.id));
+        setLoading(false);
+        return true;
+      } else {
+        throw new Error("Pair not found");
+      }
     } catch (err) {
       setError(err.message);
       setLoading(false);
-      throw new Error("Erro ao desfazer o par.");
     }
   };
 

@@ -7,7 +7,7 @@ import ToastNotification from "../toastNotification/ToastNotification";
 import CodeDisplay from "../codeDisplay/CodeDisplay";
 import CodeConnectionModal from "../codeConnectionModal/CodeConnectionModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar = ({ children }) => {
   const [show, setShow] = useState(false);
@@ -16,29 +16,31 @@ const Sidebar = ({ children }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState("");
-  const [error, setError] = useState("");
   const { user } = useAuthValue();
   const [showModal, setShowModal] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const handleCodeModalOpen = () => setShowModal(true);
-  const handleCodeModalClose = () => setShowModal(false);
+  const handleCodeModalClose = () => {
+    setShowModal(false);
+    fetchPairStatus();
+  };
 
-  const { checkIfUserHasPair, generatePairCode } = usePairing();
+  const { checkIfUserHasPair, generatePairCode, deletePair, error } =
+    usePairing();
+
+  const fetchPairStatus = async () => {
+    const result = await checkIfUserHasPair(user?.uid);
+    setIsPair(result ? true : false);
+  };
 
   useEffect(() => {
-    const result = checkIfUserHasPair(user?.uid);
-    if (result) {
-      setIsPair(result);
-    } else {
-      setIsPair(false);
-    }
-  }, []);
+    fetchPairStatus();
+  }, [user]);
 
   const handleGeneratePairCode = async (e) => {
     e.preventDefault();
-    setError("");
 
     const code = await generatePairCode(user?.uid, user?.email);
     if (code) {
@@ -49,7 +51,23 @@ const Sidebar = ({ children }) => {
       setIsPair(true);
     } else {
       setCode("");
-      setToastMessage("Erro ao gerar o código.");
+      setToastMessage(error);
+      setShowToast(true);
+      setToastType("error");
+    }
+  };
+
+  const handleDeletePair = async (e) => {
+    e.preventDefault();
+
+    const result = await deletePair(user?.uid);
+    if (result) {
+      setToastMessage("Par desconectado com sucesso!");
+      setShowToast(true);
+      setToastType("success");
+      setIsPair(false);
+    } else {
+      setToastMessage(error);
       setShowToast(true);
       setToastType("error");
     }
@@ -68,7 +86,7 @@ const Sidebar = ({ children }) => {
         <Nav className={`flex-column`}>
           <div className={styles.menu}>
             {isPair ? (
-              <Nav.Link href="#home" className={styles.menuItem}>
+              <Nav.Link onClick={handleDeletePair} className={styles.menuItem}>
                 Desconectar Par
               </Nav.Link>
             ) : (
@@ -80,7 +98,6 @@ const Sidebar = ({ children }) => {
                   Gerar Código
                 </Nav.Link>
                 <Nav.Link
-                  href="#home"
                   className={styles.menuItem}
                   onClick={handleCodeModalOpen}
                 >
