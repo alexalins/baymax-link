@@ -19,7 +19,6 @@ const Login = () => {
     error: authError,
     loading,
     loginWithGoogle,
-    user,
   } = useAuthentication();
 
   const handleLogin = async (e) => {
@@ -31,8 +30,8 @@ const Login = () => {
       email,
       password,
     };
-    await loginWithEmailAndPassword(userLogin);
-    if (user) {
+    const loggedInUser = await loginWithEmailAndPassword(userLogin);
+    if (loggedInUser) {
       setToastMessage("Login realizado com sucesso!");
       setShowToast(true);
       setToastType("success");
@@ -48,11 +47,8 @@ const Login = () => {
     e.preventDefault();
 
     setError("");
-    await loginWithGoogle(user);
-    if (user) {
-      setToastMessage("Login realizado com sucesso!");
-      setShowToast(true);
-      setToastType("success");
+    const loggedInUser = await loginWithGoogle();
+    if (loggedInUser) {
       navigate('/home');
     } else {
       setToastMessage("Erro ao realizar o login.");

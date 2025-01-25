@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import useAuthentication from "../../shared/hooks/useAuthentication";
 import { Card, Button, Form, FloatingLabel } from "react-bootstrap";
 import styles from "./Register.module.css";
-import { useNavigate } from "react-router-dom";
-
 import { db } from "../../../firebase/config";
 import ToastNotification from "../../shared/components/ToastNotification";
 
@@ -16,10 +14,7 @@ const Register = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState("");
-
-  //
   const { createUser, error: authError, loading } = useAuthentication();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,10 +34,10 @@ const Register = () => {
 
     const res = await createUser(user);
     if (res) {
-      navigate("/");
       setToastMessage("Cadastro realizado com sucesso!");
       setShowToast(true);
       setToastType("success");
+      limparFormulario();
     } else {
       setToastMessage("Erro ao realizar o cadastro.");
       setShowToast(true);
@@ -55,6 +50,13 @@ const Register = () => {
       setError(authError);
     }
   }, [authError]);
+
+  const limparFormulario = () => {
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+  }
 
   return (
     <div

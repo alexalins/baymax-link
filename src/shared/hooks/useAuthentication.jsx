@@ -14,7 +14,6 @@ const useAuthentication = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(null);
   const [cancelled, setCancelled] = useState(null);
-  const [user, setUser] = useState(null);
 
   const auth = getAuth();
 
@@ -69,7 +68,7 @@ const useAuthentication = () => {
     //
     try {
       const result = await signInWithEmailAndPassword(auth, data.email, data.password);
-      setUser(result.user);
+      return result.user;
     } catch (error) {
       let systemErrorMessage;
 
@@ -94,7 +93,7 @@ const useAuthentication = () => {
   
     try {
       const result = await signInWithPopup(auth, provider); 
-      setUser(result.user);
+      return result.user;
     } catch (error) {
       let systemErrorMessage;
   
@@ -122,7 +121,6 @@ const useAuthentication = () => {
     error,
     loading,
     logout,
-    user,
     loginWithEmailAndPassword,
     loginWithGoogle,
   };
