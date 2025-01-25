@@ -118,7 +118,10 @@ const Sidebar = ({ children }) => {
         </Button>
         <Offcanvas show={show} onHide={handleClose}>
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Menu Lateral</Offcanvas.Title>
+            <Offcanvas.Title>
+              {user?.displayName ? user.displayName : "Usuário logado"}
+            </Offcanvas.Title>
+            {code && <CodeDisplay code={code} />}
           </Offcanvas.Header>
           <Offcanvas.Body>
             <Nav className="flex-column">
