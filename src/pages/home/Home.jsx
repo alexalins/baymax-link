@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ToastNotification from "../../shared/components/ToastNotification";
+import ToastNotification from "../../shared/components/ToastNotification/ToastNotification";
 
 const Home = () => {
   const [toastMessage, setToastMessage] = useState("");

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import useAuthentication from "../../shared/hooks/useAuthentication";
 import { Card, Button, Form, FloatingLabel } from "react-bootstrap";
 import styles from "./Register.module.css";
+import ToastNotification from "../../shared/components/ToastNotification/ToastNotification";
 import { db } from "../../../firebase/config";
-import ToastNotification from "../../shared/components/ToastNotification";
 
 const Register = () => {
   const [name, setName] = useState("");

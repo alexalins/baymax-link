@@ -3,7 +3,7 @@ import styles from "./Login.module.css";
 import useAuthentication from "../../shared/hooks/useAuthentication";
 import { Card, Button, Form, FloatingLabel } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
-import ToastNotification from "../../shared/components/ToastNotification";
+import ToastNotification from "../../shared/components/ToastNotification/ToastNotification";
 
 const Login = () => {
   const [email, setEmail] = useState("");
