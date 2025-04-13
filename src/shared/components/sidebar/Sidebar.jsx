@@ -9,9 +9,10 @@ import CodeConnectionModal from "../codeConnectionModal/CodeConnectionModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
-const Sidebar = ({ children }) => {
+const Sidebar = ({ children, onPairStatusChange  }) => {
   const [show, setShow] = useState(false);
   const [isPair, setIsPair] = useState(false);
+  const [isPairNull, setIsPairNull] = useState(false);
   const [code, setCode] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -31,12 +32,21 @@ const Sidebar = ({ children }) => {
     usePairing();
 
   const fetchPairStatus = async () => {
-    const result = await checkIfUserHasPair(user?.uid);
-    setIsPair(result ? true : false);
+    const { hasPair, isPairNull }= await checkIfUserHasPair(user?.uid);
+    setIsPair(hasPair ? true : false);
+    setIsPairNull(isPairNull ? true : false);
+    if (onPairStatusChange) {
+      onPairStatusChange(hasPair ? true : false);
+    }
+
   };
 
   useEffect(() => {
     fetchPairStatus();
+    if(!isPair || isPairNull) {
+      let code = sessionStorage.getItem("pairCode");
+      setCode(code);
+    }
   }, [user]);
 
   const handleGeneratePairCode = async (e) => {
@@ -49,8 +59,13 @@ const Sidebar = ({ children }) => {
       setShowToast(true);
       setToastType("success");
       setIsPair(true);
+      sessionStorage.setItem("pairCode", code);
+      if (onPairStatusChange) {
+        onPairStatusChange(true);
+      }
     } else {
       setCode("");
+      sessionStorage.removeItem("pairCode");
       setToastMessage(error);
       setShowToast(true);
       setToastType("error");
@@ -66,6 +81,10 @@ const Sidebar = ({ children }) => {
       setShowToast(true);
       setToastType("success");
       setIsPair(false);
+      if (onPairStatusChange) {
+        onPairStatusChange(true);
+      }
+      sessionStorage.removeItem("pairCode");
     } else {
       setToastMessage(error);
       setShowToast(true);
@@ -81,8 +100,7 @@ const Sidebar = ({ children }) => {
         <h5 className={`${styles.nome} flex-column p-3`}>
           {user?.displayName ? user.displayName : "Usuário logado"}
         </h5>
-        {code && isPair && <CodeDisplay code={code} />}
-
+        {code && <CodeDisplay code={code} />}
         <Nav className={`flex-column`}>
           <div className={styles.menu}>
             {isPair ? (
@@ -121,7 +139,7 @@ const Sidebar = ({ children }) => {
             <Offcanvas.Title>
               {user?.displayName ? user.displayName : "Usuário logado"}
             </Offcanvas.Title>
-            {code && isPair && <CodeDisplay code={code} />}
+            {code && <CodeDisplay code={code} />}
           </Offcanvas.Header>
           <Offcanvas.Body>
             <Nav className="flex-column">

@@ -15,6 +15,7 @@ import { db } from "../../../firebase/config";
 
 const usePairing = () => {
   const [loading, setLoading] = useState(false);
+  const [isPair, setIsPair] = useState(null);
   const [error, setError] = useState(null);
 
   const generatePairCode = async (userId, email) => {
@@ -72,23 +73,32 @@ const usePairing = () => {
   const checkIfUserHasPair = async (userId) => {
     try {
       setLoading(true);
-
+    
       const pairsRef = collection(db, "pairs");
+    
       const q1 = query(pairsRef, where("user1.userId", "==", userId));
       const result1 = await getDocs(q1);
-      const hasPair1 = result1.docs.some((doc) => doc.data().user2 !== null);
+      const pair1 = result1.docs.find((doc) => doc.data().user2 === null || doc.data().user2 !== null);
+      const isPair1Null = pair1 ? pair1.data().user2 === null : false; 
+    
       const q2 = query(pairsRef, where("user2.userId", "==", userId));
       const result2 = await getDocs(q2);
-      const hasPair = hasPair1 || !result2.empty;
-  
+      const pair2 = result2.docs.find((doc) => doc.data().user1 === null || doc.data().user1 !== null);
+      const isPair2Null = pair2 ? pair2.data().user1 === null : false; 
+      const hasPair = pair1 || pair2;
+    
       setLoading(false);
-      return hasPair;
+    
+      return {
+        hasPair: hasPair ? true : false,
+        isPairNull: isPair1Null || isPair2Null 
+      };
     } catch (err) {
       setError(err.message);
       setLoading(false);
-      return false;
-    }
-  };  
+      return { hasPair: false, isPairNull: false };
+    }       
+  };
 
   const deletePair = async (userId) => {
     try {
@@ -116,6 +126,43 @@ const usePairing = () => {
     }
   };
 
+  const getPairId = async (userId) => {
+    try {
+      setLoading(true);
+
+      const pairsRef = collection(db, "pairs");
+
+      // Verifica se o usuário é user1
+      const q1 = query(pairsRef, where("user1.userId", "==", userId));
+      const result1 = await getDocs(q1);
+      if (!result1.empty) {
+        const pairData = result1.docs[0].data();
+        if (pairData.user2) {
+          setLoading(false);
+          return pairData.user2.userId;
+        }
+      }
+
+      // Verifica se o usuário é user2
+      const q2 = query(pairsRef, where("user2.userId", "==", userId));
+      const result2 = await getDocs(q2);
+      if (!result2.empty) {
+        const pairData = result2.docs[0].data();
+        if (pairData.user1) {
+          setLoading(false);
+          return pairData.user1.userId;
+        }
+      }
+
+      setLoading(false);
+      return null; // Não tem par ainda
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+      return null;
+    }
+  };
+
   return {
     loading,
     error,
@@ -123,6 +170,7 @@ const usePairing = () => {
     connectWithCode,
     checkIfUserHasPair,
     deletePair,
+    getPairId,
   };
 };
 
