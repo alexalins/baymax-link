@@ -12,19 +12,36 @@ import {
   where,
   serverTimestamp
 } from 'firebase/firestore';
-import { db } from '../firebase';
-import { useAuth } from './useAuth';
+import { db } from "../../../firebase/config";
+import { useAuthValue } from "../context/AuthContext";
+import usePairing from "./usePairing";
 
-export function useQuestions() {
+const useQuestions = () => {
   const [questions, setQuestions] = useState([]);
-  const { user, pairId } = useAuth();
+  const [pairId, setPairId] = useState(null);
+  const { user } = useAuthValue();
+  const { getPairId } = usePairing();
 
+  // Carrega o pairId assim que tiver user logado
   useEffect(() => {
-    if (user && pairId) fetchQuestions();
+    const fetchPair = async () => {
+      if (user) {
+        const id = await getPairId(user.uid);
+        setPairId(id);
+      }
+    };
+    fetchPair();
+  }, [user]);
+
+  // Busca perguntas quando tiver user e pairId definidos
+  useEffect(() => {
+    if (user && pairId) {
+      fetchQuestions();
+    }
   }, [user, pairId]);
 
-  // Lista perguntas entre você e seu par (autor ou destinatário)
-  async function fetchQuestions() {
+  // Lista perguntas entre você e seu par
+  const fetchQuestions = async () => {
     const q = query(
       collection(db, 'questions'),
       where('participants', 'array-contains', user.uid),
@@ -37,10 +54,12 @@ export function useQuestions() {
       ...doc.data()
     }));
     setQuestions(list);
-  }
+  };
 
-  // Cria uma nova pergunta destinada ao seu par
-  async function createQuestion(text) {
+  // Cria nova pergunta pro par
+  const createQuestion = async (text) => {
+    if (!pairId) return;
+
     await addDoc(collection(db, 'questions'), {
       text,
       createdAt: serverTimestamp(),
@@ -48,39 +67,36 @@ export function useQuestions() {
       recipientId: pairId,
       participants: [user.uid, pairId]
     });
-    fetchQuestions();
-  }
 
-  // Busca pergunta por ID
-  async function getQuestionById(id) {
+    fetchQuestions();
+  };
+
+  const getQuestionById = async (id) => {
     const ref = doc(db, 'questions', id);
     const snapshot = await getDoc(ref);
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
-  }
+  };
 
-  // Edita o texto da pergunta
-  async function editQuestion(id, newText) {
+  const editQuestion = async (id, newText) => {
     const ref = doc(db, 'questions', id);
     await updateDoc(ref, { text: newText });
     fetchQuestions();
-  }
+  };
 
-  // Exclui pergunta
-  async function deleteQuestion(id) {
+  const deleteQuestion = async (id) => {
     const ref = doc(db, 'questions', id);
     await deleteDoc(ref);
     fetchQuestions();
-  }
+  };
 
-  // Responde a pergunta
-  async function answerQuestion(id, answer) {
+  const answerQuestion = async (id, answer) => {
     const ref = doc(db, 'questions', id);
     await updateDoc(ref, {
       answer,
       answeredAt: serverTimestamp()
     });
     fetchQuestions();
-  }
+  };
 
   return {
     questions,
@@ -90,4 +106,6 @@ export function useQuestions() {
     deleteQuestion,
     answerQuestion
   };
-}
+};
+
+export default useQuestions;

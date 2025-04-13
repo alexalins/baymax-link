@@ -46,6 +46,9 @@ const Sidebar = ({ children, onPairStatusChange  }) => {
     if(!isPair || isPairNull) {
       let code = sessionStorage.getItem("pairCode");
       setCode(code);
+    } else {
+      sessionStorage.removeItem("pairCode");
+      setCode("");
     }
   }, [user]);
 

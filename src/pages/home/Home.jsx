@@ -11,9 +11,14 @@ const Home = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [isPair, setIsPair] = useState(false);
 
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+
+  const handlePairStatusChange = (status) => {
+    setIsPair(status);
+  };
 
   useEffect(() => {
     setToastMessage("Login realizado com sucesso!");
@@ -23,7 +28,7 @@ const Home = () => {
 
   return (
     <div>
-      <Sidebar>
+      <Sidebar onPairStatusChange={handlePairStatusChange}>
         <h1>Home</h1>
 
         {showToast && (
@@ -34,10 +39,12 @@ const Home = () => {
           />
         )}
       </Sidebar>
-      <FloatingButton
-        onClick={() => handleOpenModal()}
-        icon={<FontAwesomeIcon icon={faPlus} />}
-      />
+      {isPair && (
+        <FloatingButton
+          onClick={() => handleOpenModal()}
+          icon={<FontAwesomeIcon icon={faPlus} />}
+        />
+      )}
       <ModalQuestion show={showModal} onClose={handleCloseModal} />
     </div>
   );
