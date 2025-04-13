@@ -81,7 +81,7 @@ const Sidebar = ({ children }) => {
         <h5 className={`${styles.nome} flex-column p-3`}>
           {user?.displayName ? user.displayName : "Usuário logado"}
         </h5>
-        {code && <CodeDisplay code={code} />}
+        {code && isPair && <CodeDisplay code={code} />}
 
         <Nav className={`flex-column`}>
           <div className={styles.menu}>
@@ -121,7 +121,7 @@ const Sidebar = ({ children }) => {
             <Offcanvas.Title>
               {user?.displayName ? user.displayName : "Usuário logado"}
             </Offcanvas.Title>
-            {code && <CodeDisplay code={code} />}
+            {code && isPair && <CodeDisplay code={code} />}
           </Offcanvas.Header>
           <Offcanvas.Body>
             <Nav className="flex-column">
