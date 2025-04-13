@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
@@ -10,8 +10,8 @@ import {
   query,
   orderBy,
   where,
-  serverTimestamp
-} from 'firebase/firestore';
+  serverTimestamp,
+} from "firebase/firestore";
 import { db } from "../../../firebase/config";
 import { useAuthValue } from "../context/AuthContext";
 import usePairing from "./usePairing";
@@ -40,7 +40,40 @@ const useQuestions = () => {
     }
   }, [user, pairId]);
 
-  // Lista perguntas entre você e seu par
+  // Perguntas que eu fiz para meu par
+  const fetchQuestionsFromMe = async () => {
+    const q = query(
+      collection(db, "questions"),
+      where("authorId", "==", user.uid),
+      where("recipientId", "==", pairId),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+    const list = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return list;
+  };
+
+  // Perguntas que meu par fez para mim
+  const fetchQuestionsToMe = async () => {
+    const q = query(
+      collection(db, "questions"),
+      where("authorId", "==", pairId),
+      where("recipientId", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+    const list = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return list;
+  };
+
   const fetchQuestions = async () => {
     const q = query(
       collection(db, 'questions'),
@@ -60,40 +93,40 @@ const useQuestions = () => {
   const createQuestion = async (text) => {
     if (!pairId) return;
 
-    await addDoc(collection(db, 'questions'), {
+    await addDoc(collection(db, "questions"), {
       text,
       createdAt: serverTimestamp(),
       authorId: user.uid,
       recipientId: pairId,
-      participants: [user.uid, pairId]
+      participants: [user.uid, pairId],
     });
 
     fetchQuestions();
   };
 
   const getQuestionById = async (id) => {
-    const ref = doc(db, 'questions', id);
+    const ref = doc(db, "questions", id);
     const snapshot = await getDoc(ref);
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
   };
 
   const editQuestion = async (id, newText) => {
-    const ref = doc(db, 'questions', id);
+    const ref = doc(db, "questions", id);
     await updateDoc(ref, { text: newText });
     fetchQuestions();
   };
 
   const deleteQuestion = async (id) => {
-    const ref = doc(db, 'questions', id);
+    const ref = doc(db, "questions", id);
     await deleteDoc(ref);
     fetchQuestions();
   };
 
   const answerQuestion = async (id, answer) => {
-    const ref = doc(db, 'questions', id);
+    const ref = doc(db, "questions", id);
     await updateDoc(ref, {
       answer,
-      answeredAt: serverTimestamp()
+      answeredAt: serverTimestamp(),
     });
     fetchQuestions();
   };
@@ -104,7 +137,9 @@ const useQuestions = () => {
     getQuestionById,
     editQuestion,
     deleteQuestion,
-    answerQuestion
+    answerQuestion,
+    fetchQuestionsFromMe,
+    fetchQuestionsToMe
   };
 };
 

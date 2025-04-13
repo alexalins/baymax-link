@@ -12,10 +12,7 @@ const ModalQuestion = ({ show, onClose }) => {
 
   const handleAddQuestion = async (e) => {
     e.preventDefault();
-    const questionData = {
-      question: question,
-    };
-    await createQuestion(questionData);
+    await createQuestion(question);
     setQuestion(textQuestionInit);
     onClose();
   };

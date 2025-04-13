@@ -5,6 +5,8 @@ import FloatingButton from "../../shared/components/floatingButton/floatingButto
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import ModalQuestion from "../../shared/components/modalQuestion/ModalQuestion";
+import TabsQuestion from "../../shared/components/tabsQuestion/TabsQuestion";
+import styles from "./Home.module.css";
 
 const Home = () => {
   const [toastMessage, setToastMessage] = useState("");
@@ -18,6 +20,7 @@ const Home = () => {
 
   const handlePairStatusChange = (status) => {
     setIsPair(status);
+    console.log("Status do par:", status);
   };
 
   useEffect(() => {
@@ -30,21 +33,26 @@ const Home = () => {
     <div>
       <Sidebar onPairStatusChange={handlePairStatusChange}>
         <h1>Home</h1>
-
-        {showToast && (
-          <ToastNotification
-            message={toastMessage}
-            type={toastType}
-            onClose={() => setShowToast(false)}
-          />
-        )}
+        <div className={styles.container}>
+          {isPair && (
+            <>
+              <TabsQuestion />
+              <FloatingButton
+                onClick={() => handleOpenModal()}
+                icon={<FontAwesomeIcon icon={faPlus} />}
+              />
+            </>
+          )}
+          {showToast && (
+            <ToastNotification
+              message={toastMessage}
+              type={toastType}
+              onClose={() => setShowToast(false)}
+            />
+          )}
+        </div>
       </Sidebar>
-      {isPair && (
-        <FloatingButton
-          onClick={() => handleOpenModal()}
-          icon={<FontAwesomeIcon icon={faPlus} />}
-        />
-      )}
+
       <ModalQuestion show={showModal} onClose={handleCloseModal} />
     </div>
   );
