@@ -13,11 +13,6 @@ const TabsQuestion = () => {
     setActiveTab(selectedKey);
   };
 
-  useEffect(() => {
-    handleFetchMyQuestions();
-    handleFetchPairQuestions();
-  }, [activeTab]);
-
   const handleFetchMyQuestions = async () => {
     const questions = await fetchQuestionsFromMe();
     setMyQuestions(questions);
@@ -27,6 +22,19 @@ const TabsQuestion = () => {
     const questions = await fetchQuestionsToMe();
     setPairQuestions(questions);
   }
+
+  useEffect(() => {
+    handleFetchMyQuestions();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === "forMe") {
+      handleFetchPairQuestions();
+    }
+    if (activeTab === "myQuestions") {
+      handleFetchMyQuestions();
+    }
+  }, [activeTab]);
 
   return (
     <>

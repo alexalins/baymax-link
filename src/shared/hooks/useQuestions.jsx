@@ -14,31 +14,13 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../firebase/config";
 import { useAuthValue } from "../context/AuthContext";
-import usePairing from "./usePairing";
+import { usePartner } from "../context/PartnerContext";
+
 
 const useQuestions = () => {
   const [questions, setQuestions] = useState([]);
-  const [pairId, setPairId] = useState(null);
   const { user } = useAuthValue();
-  const { getPairId } = usePairing();
-
-  // Carrega o pairId assim que tiver user logado
-  useEffect(() => {
-    const fetchPair = async () => {
-      if (user) {
-        const id = await getPairId(user.uid);
-        setPairId(id);
-      }
-    };
-    fetchPair();
-  }, [user]);
-
-  // Busca perguntas quando tiver user e pairId definidos
-  useEffect(() => {
-    if (user && pairId) {
-      fetchQuestions();
-    }
-  }, [user, pairId]);
+  const { pairId } = usePartner()
 
   // Perguntas que eu fiz para meu par
   const fetchQuestionsFromMe = async () => {
@@ -73,6 +55,28 @@ const useQuestions = () => {
     }));
     return list;
   };
+
+  // Perguntas que meu par fez para mim de hoje
+  const fetchTodaysQuestionsToMe = async () => {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+  
+    const q = query(
+      collection(db, "questions"),
+      where("authorId", "==", pairId),
+      where("recipientId", "==", user.uid),
+      where("createdAt", ">=", startOfToday),
+      orderBy("createdAt", "desc")
+    );
+  
+    const snapshot = await getDocs(q);
+    const list = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    
+    return list;
+  };  
 
   const fetchQuestions = async () => {
     const q = query(
@@ -139,7 +143,8 @@ const useQuestions = () => {
     deleteQuestion,
     answerQuestion,
     fetchQuestionsFromMe,
-    fetchQuestionsToMe
+    fetchQuestionsToMe,
+    fetchTodaysQuestionsToMe
   };
 };
 

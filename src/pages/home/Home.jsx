@@ -7,6 +7,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import ModalQuestion from "../../shared/components/modalQuestion/ModalQuestion";
 import TabsQuestion from "../../shared/components/tabsQuestion/TabsQuestion";
 import styles from "./Home.module.css";
+import QuestionDaily from "../../shared/components/questionDaily/QuestionDaily";
 
 const Home = () => {
   const [toastMessage, setToastMessage] = useState("");
@@ -36,6 +37,9 @@ const Home = () => {
         <div className={styles.container}>
           {isPair && (
             <>
+              <div className={styles.questionDaily}>
+                <QuestionDaily />
+              </div>
               <TabsQuestion />
               <FloatingButton
                 onClick={() => handleOpenModal()}
