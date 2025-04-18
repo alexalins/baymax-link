@@ -1,0 +1,13 @@
+.button {
+  background: none;
+}
+
+.button:hover {
+  background: none;
+}
+
+.cardQuestion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

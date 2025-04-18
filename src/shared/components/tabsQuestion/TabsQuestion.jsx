@@ -16,12 +16,24 @@ const TabsQuestion = () => {
   const handleFetchMyQuestions = async () => {
     const questions = await fetchQuestionsFromMe();
     setMyQuestions(questions);
-  }
+  };
 
   const handleFetchPairQuestions = async () => {
     const questions = await fetchQuestionsToMe();
     setPairQuestions(questions);
-  }
+  };
+
+  const handleEdit = (question) => {
+    console.log("Editando a pergunta:", question);
+  };
+
+  const handleDelete = (question) => {
+    console.log("Excluindo a pergunta:", question);
+  };
+
+  const handleComment = (question) => {
+    console.log("Comentando a pergunta:", question);
+  };
 
   useEffect(() => {
     handleFetchMyQuestions();
@@ -48,8 +60,26 @@ const TabsQuestion = () => {
       </Nav>
 
       <div className="mt-3">
-        {activeTab === "forMe" && <CardListQuestion type="forMe" questions={pairQuestions} />}
-        {activeTab === "myQuestions" && <CardListQuestion type="myQuestions" questions={myQuestions}/>}
+        {activeTab === "forMe" && (
+          <CardListQuestion
+            type="forMe"
+            questions={pairQuestions}
+            isMyQuestion={false}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onComment={handleComment}
+          />
+        )}
+        {activeTab === "myQuestions" && (
+          <CardListQuestion
+            type="myQuestions"
+            questions={myQuestions}
+            isMyQuestion={true}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onComment={handleComment}
+          />
+        )}
       </div>
     </>
   );

@@ -12,6 +12,18 @@ const QuestionDaily = () => {
     setMyQuestions(questions);
   };
 
+  const handleEdit = (question) => {
+    console.log("Editando a pergunta:", question);
+  };
+
+  const handleDelete = (question) => {
+    console.log("Excluindo a pergunta:", question);
+  };
+
+  const handleComment = (question) => {
+    console.log("Comentando a pergunta:", question);
+  };
+
   useEffect(() => {
     console.log("Chamando perguntas diárias...");
     handleFetchTodaysQuestionsToMe();
@@ -19,7 +31,15 @@ const QuestionDaily = () => {
 
   return (
     <>
-      <CardListQuestion type="myQuestions" questions={myQuestions} isDaily={true} />
+      <CardListQuestion
+        type="myQuestions"
+        questions={myQuestions}
+        isDaily={true}
+        isMyQuestion={false}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onComment={handleComment}
+      />
     </>
   );
 };
