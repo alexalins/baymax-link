@@ -8,6 +8,7 @@ import ModalQuestion from "../../shared/components/modalQuestion/ModalQuestion";
 import TabsQuestion from "../../shared/components/tabsQuestion/TabsQuestion";
 import styles from "./Home.module.css";
 import QuestionDaily from "../../shared/components/questionDaily/QuestionDaily";
+import { useAuthValue } from "../../shared/context/AuthContext";
 
 const Home = () => {
   const [toastMessage, setToastMessage] = useState("");
@@ -15,6 +16,7 @@ const Home = () => {
   const [toastType, setToastType] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [isPair, setIsPair] = useState(false);
+  const { user } = useAuthValue();
 
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -27,7 +29,7 @@ const Home = () => {
     setToastMessage("Login realizado com sucesso!");
     setShowToast(true);
     setToastType("success");
-  }, []);
+  }, [user]);
 
   return (
     <div>
@@ -46,13 +48,13 @@ const Home = () => {
               />
             </>
           )}
-          {showToast && (
+          {/*showToast && (
             <ToastNotification
               message={toastMessage}
               type={toastType}
               onClose={() => setShowToast(false)}
             />
-          )}
+          ) */}
         </div>
       </Sidebar>
 

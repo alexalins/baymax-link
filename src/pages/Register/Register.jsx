@@ -22,7 +22,6 @@ const Register = () => {
 
     if (password !== confirmPassword) {
       setError("As senhas precisam ser iguais.");
-      console.log(error);
       return;
     }
 

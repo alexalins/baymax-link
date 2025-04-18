@@ -3,18 +3,25 @@ import Nav from "react-bootstrap/Nav";
 import CardListQuestion from "../cardListQuestion/CardListQuestion";
 import useQuestions from "../../hooks/useQuestions";
 import ModalQuestion from "../modalQuestion/ModalQuestion";
+import ModalDelete from "../modalDelete/ModalDelete";
 
 const TabsQuestion = () => {
   const [activeTab, setActiveTab] = useState("forMe");
   const [pairQuestions, setPairQuestions] = useState(null);
   const [myQuestions, setMyQuestions] = useState(null);
   const { fetchQuestionsFromMe, fetchQuestionsToMe } = useQuestions();
-  const [showModal, setShowModal] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
   const [myQuestionModal, setMyQuestionModal] = useState(null);
 
-  const handleCloseModal = () => {
+  const handleCloseModalEdit = () => {
     handleFetchMyQuestions();
-    setShowModal(false)
+    setShowModalEdit(false)
+  };
+
+  const handleCloseModalDelete = () => {
+    handleFetchMyQuestions();
+    setShowModalDelete(false);
   };
 
   const handleSelect = (selectedKey) => {
@@ -33,11 +40,12 @@ const TabsQuestion = () => {
 
   const handleEdit = (question) => {
     setMyQuestionModal(question);
-    setShowModal(true);
+    setShowModalEdit(true);
   };
 
   const handleDelete = (question) => {
-    console.log("Excluindo a pergunta:", question);
+    setMyQuestionModal(question);
+    setShowModalDelete(true);
   };
 
   const handleComment = (question) => {
@@ -90,7 +98,8 @@ const TabsQuestion = () => {
           />
         )}
       </div>
-      <ModalQuestion show={showModal} onClose={handleCloseModal} myQuestion={myQuestionModal}/>
+      <ModalQuestion show={showModalEdit} onClose={handleCloseModalEdit} myQuestion={myQuestionModal}/>
+      <ModalDelete show={showModalDelete} onClose={handleCloseModalDelete} myQuestion={myQuestionModal}/>
     </>
   );
 };

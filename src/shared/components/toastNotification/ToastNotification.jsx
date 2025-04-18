@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Toast } from 'react-bootstrap';
 
-const ToastNotification = ({ message, type, duration = 3000, onClose }) => {
+const ToastNotification = ({ message, type, duration = 2000, onClose }) => {
   const [show, setShow] = useState(true);
 
   useEffect(() => {
