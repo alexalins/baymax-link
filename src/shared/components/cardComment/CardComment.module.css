@@ -1,0 +1,11 @@
+.divButtons {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.buttonLeft {
+    margin-right: 2%;
+} 

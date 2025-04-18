@@ -48,10 +48,6 @@ const TabsQuestion = () => {
     setShowModalDelete(true);
   };
 
-  const handleComment = (question) => {
-    console.log("Comentando a pergunta:", question);
-  };
-
   useEffect(() => {
     handleFetchMyQuestions();
   }, []);
@@ -84,7 +80,6 @@ const TabsQuestion = () => {
             isMyQuestion={false}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onComment={handleComment}
           />
         )}
         {activeTab === "myQuestions" && (
@@ -94,7 +89,6 @@ const TabsQuestion = () => {
             isMyQuestion={true}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onComment={handleComment}
           />
         )}
       </div>

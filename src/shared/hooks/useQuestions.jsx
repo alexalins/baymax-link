@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   collection,
   addDoc,
@@ -11,6 +11,7 @@ import {
   orderBy,
   where,
   serverTimestamp,
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "../../../firebase/config";
 import { useAuthValue } from "../context/AuthContext";
@@ -103,6 +104,7 @@ const useQuestions = () => {
       authorId: user.uid,
       recipientId: pairId,
       participants: [user.uid, pairId],
+      comments: [],
     });
 
     fetchQuestions();
@@ -127,14 +129,28 @@ const useQuestions = () => {
   };
 
   const answerQuestion = async (id, answer) => {
-    const ref = doc(db, "questions", id);
-    await updateDoc(ref, {
-      answer,
-      answeredAt: serverTimestamp(),
-    });
-    fetchQuestions();
+    if (!id || !answer || !user?.uid) return;
+  
+    try {
+      const ref = doc(db, "questions", id);
+  
+      const comment = {
+        text: answer,
+        createdAt: new Date(),
+        authorId: user.uid,
+      };
+  
+      await updateDoc(ref, {
+        answeredAt: serverTimestamp(),
+        comments: arrayUnion(comment),
+      });
+  
+      fetchQuestions();
+    } catch (error) {
+      console.error("Erro ao responder pergunta:", error);
+    }
   };
-
+   
   return {
     questions,
     createQuestion,
