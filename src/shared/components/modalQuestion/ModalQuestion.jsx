@@ -1,21 +1,35 @@
-import React, { useState } from "react";
-import styles from "./modalQuestion.module.css";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import useQuestions from "../../hooks/useQuestions";
 
-const ModalQuestion = ({ show, onClose }) => {
+const ModalQuestion = ({ show, onClose, myQuestion = null }) => {
   const textQuestionInit = "Em uma escala de 1 a 10...";
-  const [question, setQuestion] = useState(textQuestionInit);
-  const { createQuestion } = useQuestions();
+  const [question, setQuestion] = useState(null);
+  const [isEdit, setIsEdit] = useState(false);
+  const { createQuestion, editQuestion} = useQuestions();
 
   const handleAddQuestion = async (e) => {
     e.preventDefault();
-    await createQuestion(question);
+    if(isEdit) {
+      await editQuestion(myQuestion.id, question);
+    } else {
+      await createQuestion(question);
+    }
     setQuestion(textQuestionInit);
     onClose();
   };
+
+  useEffect(() => {
+    if (myQuestion) {
+      setQuestion(myQuestion.text);
+      setIsEdit(true)
+    } else {
+      setQuestion(textQuestionInit);
+      setIsEdit(false)
+    }
+  }, [myQuestion]);
 
   return (
     <Modal show={show} onHide={onClose}>

@@ -21,7 +21,6 @@ const Home = () => {
 
   const handlePairStatusChange = (status) => {
     setIsPair(status);
-    console.log("Status do par:", status);
   };
 
   useEffect(() => {

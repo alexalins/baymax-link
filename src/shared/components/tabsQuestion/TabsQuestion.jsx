@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import Nav from "react-bootstrap/Nav";
 import CardListQuestion from "../cardListQuestion/CardListQuestion";
 import useQuestions from "../../hooks/useQuestions";
+import ModalQuestion from "../modalQuestion/ModalQuestion";
 
 const TabsQuestion = () => {
   const [activeTab, setActiveTab] = useState("forMe");
   const [pairQuestions, setPairQuestions] = useState(null);
   const [myQuestions, setMyQuestions] = useState(null);
   const { fetchQuestionsFromMe, fetchQuestionsToMe } = useQuestions();
+  const [showModal, setShowModal] = useState(false);
+  const [myQuestionModal, setMyQuestionModal] = useState(null);
+
+  const handleCloseModal = () => {
+    handleFetchMyQuestions();
+    setShowModal(false)
+  };
 
   const handleSelect = (selectedKey) => {
     setActiveTab(selectedKey);
@@ -24,7 +32,8 @@ const TabsQuestion = () => {
   };
 
   const handleEdit = (question) => {
-    console.log("Editando a pergunta:", question);
+    setMyQuestionModal(question);
+    setShowModal(true);
   };
 
   const handleDelete = (question) => {
@@ -81,6 +90,7 @@ const TabsQuestion = () => {
           />
         )}
       </div>
+      <ModalQuestion show={showModal} onClose={handleCloseModal} myQuestion={myQuestionModal}/>
     </>
   );
 };
